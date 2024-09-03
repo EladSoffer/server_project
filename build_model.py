@@ -5,7 +5,10 @@ import subprocess
 
 def retrain_model():
     # Run model.py script
-    subprocess.run(['python', 'model.py'])
+    try:
+        subprocess.run([r'C:\Users\elad1\PycharmProjects\model_for_app2\.venv\Scripts\python.exe', 'model.py'])
+    except subprocess.CalledProcessError as e:
+        print(f"An error occurred while running the model: {e}")
 
 # Function to send notification emails
 def send_notification_emails(emails_collection):
@@ -15,10 +18,13 @@ def send_notification_emails(emails_collection):
     for email in emails:
         # Send email to user
         send_email(email['email'])
+        # After sending, delete the email from the collection
+        emails_collection.delete_one({'_id': email['_id']})
+
 
 def send_email(email):
     subject = "Email Subject"
-    body = "This is the body of the text message"
+    body = "Hi the model was retrained"
     sender = "fruitdetectionapp@gmail.com"
     recipients = [email]
     password = "dsgh doia zynk keof"
@@ -40,8 +46,12 @@ def send_email(email):
 def build_model(emails_collection):
     # Replace this with your actual model building and training code
     global fruit_categories
-    retrain_model()
-    send_notification_emails(emails_collection)
-    directory = "images"
+    directory = "train"
     fruit_categories = [d for d in os.listdir(directory) if os.path.isdir(os.path.join(directory, d))]
     fruit_categories = [word.replace("_", " ") for word in fruit_categories]
+    print(len(fruit_categories))
+    print(fruit_categories)
+    send_notification_emails(emails_collection)
+    retrain_model()
+
+
